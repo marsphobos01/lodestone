@@ -1,7 +1,6 @@
 // ═══════════════════════════════════════════════════════════════════════════════
-//  Lodestone v2
-//  Warm minimalist aesthetic — matches marsphobos.com portfolio
-//  Palette: linen/cream bg, near-black ink, burnt-orange accent (#c76a2f)
+//  Lodestone v3
+//  Dark minimalist aesthetic — cool charcoal bg, teal accent (#1eb3a3)
 // ═══════════════════════════════════════════════════════════════════════════════
 
 #![allow(dead_code)]
@@ -29,30 +28,30 @@ use iced::{Color, Element, Length, Settings, Size, Task};
 mod pal {
     use iced::Color;
 
-    // Backgrounds
-    pub const BG:       Color = Color { r: 0.953, g: 0.945, b: 0.933, a: 1.0 }; // #f3f1ee
-    pub const BG_WARM:  Color = Color { r: 0.969, g: 0.949, b: 0.918, a: 1.0 }; // #f7f2ea (card)
-    pub const SURFACE:  Color = Color { r: 0.961, g: 0.953, b: 0.941, a: 1.0 }; // slightly off bg
+    // Backgrounds — deep cool charcoal
+    pub const BG:        Color = Color { r: 0.051, g: 0.059, b: 0.063, a: 1.0 }; // #0d0f10
+    pub const BG_RAISED: Color = Color { r: 0.082, g: 0.090, b: 0.094, a: 1.0 }; // #151718
+    pub const SURFACE:   Color = Color { r: 0.106, g: 0.118, b: 0.125, a: 1.0 }; // #1b1e20
 
     // Borders / dividers
-    pub const LINE:     Color = Color { r: 0.843, g: 0.824, b: 0.796, a: 1.0 }; // #d7d2cb
-    pub const LINE_DIM: Color = Color { r: 0.902, g: 0.886, b: 0.863, a: 1.0 }; // lighter
+    pub const LINE:     Color = Color { r: 0.165, g: 0.184, b: 0.192, a: 1.0 }; // #2a2f31
+    pub const LINE_DIM: Color = Color { r: 0.122, g: 0.137, b: 0.145, a: 1.0 }; // #1f2325
 
     // Text
-    pub const INK:      Color = Color { r: 0.063, g: 0.075, b: 0.078, a: 1.0 }; // #101314
-    pub const MUTED:    Color = Color { r: 0.353, g: 0.380, b: 0.396, a: 1.0 }; // #5a6165
-    pub const FAINT:    Color = Color { r: 0.600, g: 0.627, b: 0.643, a: 1.0 }; // lighter muted
+    pub const INK:   Color = Color { r: 0.918, g: 0.933, b: 0.941, a: 1.0 }; // #eaeff0
+    pub const MUTED: Color = Color { r: 0.529, g: 0.565, b: 0.584, a: 1.0 }; // #879095
+    pub const FAINT: Color = Color { r: 0.318, g: 0.349, b: 0.365, a: 1.0 }; // #51595d
 
-    // Accent — burnt orange / terracotta
-    pub const ACCENT:      Color = Color { r: 0.780, g: 0.416, b: 0.184, a: 1.0 }; // #c76a2f
-    pub const ACCENT_DARK: Color = Color { r: 0.561, g: 0.290, b: 0.133, a: 1.0 }; // #8f4a22
-    pub const ACCENT_TINT: Color = Color { r: 0.780, g: 0.416, b: 0.184, a: 0.10 }; // 10% tint
+    // Accent — teal / cyan
+    pub const ACCENT:      Color = Color { r: 0.118, g: 0.702, b: 0.639, a: 1.0 }; // #1eb3a3
+    pub const ACCENT_DARK: Color = Color { r: 0.082, g: 0.502, b: 0.459, a: 1.0 }; // #158075
+    pub const ACCENT_TINT: Color = Color { r: 0.118, g: 0.702, b: 0.639, a: 0.10 };
 
-    // Status — desaturated to stay warm
-    pub const GREEN:  Color = Color { r: 0.196, g: 0.502, b: 0.318, a: 1.0 }; // muted sage green
-    pub const AMBER:  Color = Color { r: 0.698, g: 0.502, b: 0.149, a: 1.0 }; // warm amber
-    pub const RED:    Color = Color { r: 0.698, g: 0.239, b: 0.196, a: 1.0 }; // muted brick red
-    pub const PURPLE: Color = Color { r: 0.467, g: 0.345, b: 0.631, a: 1.0 }; // dusty violet
+    // Status
+    pub const GREEN:  Color = Color { r: 0.235, g: 0.690, b: 0.431, a: 1.0 }; // #3cb06e
+    pub const AMBER:  Color = Color { r: 0.824, g: 0.627, b: 0.235, a: 1.0 }; // #d2a03c
+    pub const RED:    Color = Color { r: 0.816, g: 0.333, b: 0.306, a: 1.0 }; // #d0554e
+    pub const PURPLE: Color = Color { r: 0.565, g: 0.482, b: 0.839, a: 1.0 }; // #907bd6
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -659,16 +658,16 @@ fn tc(c: Color) -> impl Fn(&Theme) -> iced::widget::text::Style {
 fn card_container(content: Element<'_, Msg>) -> Element<'_, Msg> {
     container(content)
         .style(|_| container::Style {
-            background: Some(pal::BG_WARM.into()),
+            background: Some(pal::BG_RAISED.into()),
             border: iced::border::Border {
                 color:  pal::LINE,
                 width:  1.0,
-                radius: 14.0.into(),
+                radius: 12.0.into(),
             },
             shadow: iced::Shadow {
-                color:       Color { r: 0.063, g: 0.075, b: 0.078, a: 0.06 },
+                color:       Color { r: 0.0, g: 0.0, b: 0.0, a: 0.25 },
                 offset:      iced::Vector::new(0.0, 2.0),
-                blur_radius: 8.0,
+                blur_radius: 12.0,
             },
             ..Default::default()
         })
@@ -676,59 +675,59 @@ fn card_container(content: Element<'_, Msg>) -> Element<'_, Msg> {
         .into()
 }
 
-// Primary CTA — solid burnt-orange pill
+// Primary CTA — solid teal pill
 fn btn_primary<'a>(label: &'a str) -> button::Button<'a, Msg> {
     button(
         text(label).size(13).style(tc(Color::WHITE))
     )
     .style(|_, status| {
-        let alpha: f32 = match status {
-            button::Status::Hovered  => 0.88,
-            button::Status::Pressed  => 0.75,
-            button::Status::Disabled => 0.45,
-            button::Status::Active   => 1.0,
+        let bg = match status {
+            button::Status::Hovered  => pal::ACCENT_DARK,
+            button::Status::Pressed  => Color { a: 0.80, ..pal::ACCENT_DARK },
+            button::Status::Disabled => Color { a: 0.35, ..pal::ACCENT },
+            button::Status::Active   => pal::ACCENT,
         };
         button::Style {
-            background: Some(Color { a: alpha, ..pal::ACCENT }.into()),
+            background: Some(bg.into()),
             text_color: Color::WHITE,
             border: iced::border::Border {
-                color:  pal::ACCENT_DARK,
+                color:  Color::TRANSPARENT,
                 width:  0.0,
-                radius: 999.0.into(),
+                radius: 8.0.into(),
             },
             ..Default::default()
         }
     })
-    .padding([9, 20])
+    .padding([9, 18])
 }
 
-// Danger pill — brick red
+// Danger pill — muted red
 fn btn_danger<'a>(label: &'a str) -> button::Button<'a, Msg> {
     button(text(label).size(13).style(tc(Color::WHITE)))
         .style(|_, status| {
-            let alpha: f32 = match status {
-                button::Status::Hovered  => 0.85,
-                button::Status::Pressed  => 0.70,
-                button::Status::Disabled => 0.40,
-                button::Status::Active   => 1.0,
+            let bg = match status {
+                button::Status::Hovered  => Color { r: 0.700, g: 0.267, b: 0.247, a: 1.0 },
+                button::Status::Pressed  => Color { a: 0.80, ..pal::RED },
+                button::Status::Disabled => Color { a: 0.35, ..pal::RED },
+                button::Status::Active   => pal::RED,
             };
             button::Style {
-                background: Some(Color { a: alpha, ..pal::RED }.into()),
+                background: Some(bg.into()),
                 text_color: Color::WHITE,
-                border: iced::border::Border { radius: 999.0.into(), width: 0.0, color: pal::RED },
+                border: iced::border::Border { radius: 8.0.into(), width: 0.0, color: Color::TRANSPARENT },
                 ..Default::default()
             }
         })
-        .padding([9, 20])
+        .padding([9, 18])
 }
 
-// Ghost — outlined, transparent bg
+// Ghost — subtle surface button
 fn btn_ghost<'a>(label: &'a str) -> button::Button<'a, Msg> {
     button(text(label).size(13).style(tc(pal::MUTED)))
         .style(|_, status| {
             let bg = match status {
-                button::Status::Hovered => pal::LINE_DIM,
-                button::Status::Pressed => pal::LINE,
+                button::Status::Hovered => pal::SURFACE,
+                button::Status::Pressed => pal::LINE_DIM,
                 _ => Color::TRANSPARENT,
             };
             button::Style {
@@ -737,7 +736,7 @@ fn btn_ghost<'a>(label: &'a str) -> button::Button<'a, Msg> {
                 border: iced::border::Border {
                     color: pal::LINE,
                     width: 1.0,
-                    radius: 999.0.into(),
+                    radius: 8.0.into(),
                 },
                 ..Default::default()
             }
@@ -747,20 +746,24 @@ fn btn_ghost<'a>(label: &'a str) -> button::Button<'a, Msg> {
 
 // Nav tab button
 fn btn_nav<'a>(label: &'a str, active: bool, msg: Msg) -> Element<'a, Msg> {
-    let (bg, fg, bdr_w) = if active {
-        (pal::BG_WARM, pal::INK, 1.0f32)
-    } else {
-        (Color::TRANSPARENT, pal::MUTED, 0.0f32)
-    };
+    let fg = if active { pal::INK } else { pal::FAINT };
+    let bg = if active { pal::SURFACE } else { Color::TRANSPARENT };
+    let bdr_color = if active { pal::LINE } else { Color::TRANSPARENT };
     button(text(label).size(13).style(tc(fg)))
-        .style(move |_, _| button::Style {
-            background: Some(bg.into()),
-            text_color: fg,
-            border: iced::border::Border { color: pal::LINE, width: bdr_w, radius: 999.0.into() },
-            ..Default::default()
+        .style(move |_, status| {
+            let bg = match status {
+                button::Status::Hovered if !active => Color { a: 0.5, ..pal::SURFACE },
+                _ => bg,
+            };
+            button::Style {
+                background: Some(bg.into()),
+                text_color: fg,
+                border: iced::border::Border { color: bdr_color, width: 1.0, radius: 8.0.into() },
+                ..Default::default()
+            }
         })
         .on_press(msg)
-        .padding([8, 18])
+        .padding([7, 16])
         .into()
 }
 
@@ -769,17 +772,23 @@ fn filter_chip<'a>(label: &'a str, active: bool, msg: Msg) -> Element<'a, Msg> {
     let (bg, fg, bdr) = if active {
         (pal::ACCENT_TINT, pal::ACCENT, pal::ACCENT)
     } else {
-        (Color::TRANSPARENT, pal::MUTED, pal::LINE)
+        (Color::TRANSPARENT, pal::FAINT, pal::LINE)
     };
     button(text(label).size(12).style(tc(fg)))
-        .style(move |_, _| button::Style {
-            background: Some(bg.into()),
-            text_color: fg,
-            border: iced::border::Border { color: bdr, width: 1.0, radius: 999.0.into() },
-            ..Default::default()
+        .style(move |_, status| {
+            let bg = match status {
+                button::Status::Hovered if !active => Color { a: 0.5, ..pal::SURFACE },
+                _ => bg,
+            };
+            button::Style {
+                background: Some(bg.into()),
+                text_color: fg,
+                border: iced::border::Border { color: bdr, width: 1.0, radius: 6.0.into() },
+                ..Default::default()
+            }
         })
         .on_press(msg)
-        .padding([5, 14])
+        .padding([5, 12])
         .into()
 }
 
@@ -797,7 +806,7 @@ fn input_style_base() -> iced::widget::text_input::Style {
         icon:        pal::FAINT,
         placeholder: pal::FAINT,
         value:       pal::INK,
-        selection:   Color { a: 0.15, ..pal::ACCENT },
+        selection:   Color { a: 0.20, ..pal::ACCENT },
     }
 }
 
@@ -829,7 +838,6 @@ fn divider<'a>() -> Element<'a, Msg> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 fn view_topbar(app: &App) -> Element<'_, Msg> {
-    // Summary pill
     let pill_text: String = if app.scan_results.is_empty() {
         "No scan yet".to_string()
     } else {
@@ -842,16 +850,15 @@ fn view_topbar(app: &App) -> Element<'_, Msg> {
     };
 
     let summary_pill = container(
-        text(pill_text).size(11).style(tc(pal::MUTED))
+        text(pill_text).size(11).style(tc(pal::FAINT))
     )
     .style(|_| container::Style {
-        background: Some(pal::BG_WARM.into()),
-        border: iced::border::Border { color: pal::LINE, width: 1.0, radius: 999.0.into() },
+        background: Some(pal::SURFACE.into()),
+        border: iced::border::Border { color: pal::LINE, width: 1.0, radius: 6.0.into() },
         ..Default::default()
     })
-    .padding([5, 14]);
+    .padding([5, 12]);
 
-    // Nav tabs
     let nav = row![
         btn_nav("Scan",    app.active_panel == Panel::Scan,    Msg::NavPanel(Panel::Scan)),
         btn_nav("Operate", app.active_panel == Panel::Operate, Msg::NavPanel(Panel::Operate)),
@@ -860,8 +867,8 @@ fn view_topbar(app: &App) -> Element<'_, Msg> {
 
     container(
         row![
-            text("Lodestone").size(18).style(tc(pal::INK)),
-            Space::with_width(24),
+            text("lodestone").size(15).style(tc(pal::INK)),
+            Space::with_width(20),
             nav,
             Space::with_width(Length::Fill),
             summary_pill,
@@ -869,14 +876,9 @@ fn view_topbar(app: &App) -> Element<'_, Msg> {
         .align_y(alignment::Vertical::Center)
         .spacing(0),
     )
-    .padding([12, 24])
+    .padding([10, 20])
     .style(|_| container::Style {
-        background: Some(pal::BG_WARM.into()),
-        border: iced::border::Border {
-            color: pal::LINE,
-            width: 0.0,
-            radius: 0.0.into(),
-        },
+        background: Some(pal::BG_RAISED.into()),
         ..Default::default()
     })
     .width(Length::Fill)
@@ -903,15 +905,15 @@ fn view_log(app: &App) -> Element<'_, Msg> {
 
     container(
         row![
-            text("●").size(10).style(tc(color)),
+            text("●").size(8).style(tc(color)),
             Space::with_width(8),
-            text(msg_text).size(11).style(tc(pal::MUTED)),
+            text(msg_text).size(11).style(tc(pal::FAINT)),
         ]
         .align_y(alignment::Vertical::Center),
     )
-    .padding([8, 24])
+    .padding([7, 20])
     .style(|_| container::Style {
-        background: Some(pal::BG_WARM.into()),
+        background: Some(pal::BG_RAISED.into()),
         ..Default::default()
     })
     .width(Length::Fill)
@@ -1006,36 +1008,67 @@ fn view_scan(app: &App) -> Element<'_, Msg> {
         .collect();
 
     let results_body: Element<'_, Msg> = if app.scan_results.is_empty() {
+        let step = |n: &'static str, title: &'static str, desc: &'static str| -> Element<'_, Msg> {
+            row![
+                container(
+                    text(n).size(11).style(tc(pal::ACCENT))
+                )
+                .style(|_| container::Style {
+                    background: Some(pal::ACCENT_TINT.into()),
+                    border: iced::border::Border { color: pal::ACCENT, width: 1.0, radius: 6.0.into() },
+                    ..Default::default()
+                })
+                .padding([4, 10]),
+                Space::with_width(14),
+                column![
+                    text(title).size(13).style(tc(pal::INK)),
+                    text(desc).size(11).style(tc(pal::FAINT)),
+                ].spacing(2),
+            ]
+            .align_y(alignment::Vertical::Center)
+            .into()
+        };
+
         container(
             column![
-                text("No results yet").size(14).style(tc(pal::MUTED)),
-                text("Load a module then scan a directory.")
-                    .size(12).style(tc(pal::FAINT)),
+                text("Get started").size(18).style(tc(pal::INK)),
+                Space::with_height(4),
+                text("Follow these steps to classify your mods.")
+                    .size(12).style(tc(pal::MUTED)),
+                Space::with_height(28),
+                step("01", "Load a module", "Select and load a classification database from the left panel."),
+                Space::with_height(16),
+                step("02", "Choose a directory", "Point Lodestone at your Minecraft mods folder."),
+                Space::with_height(16),
+                step("03", "Scan", "Lodestone will classify every jar by side, loader, and source."),
             ]
-            .spacing(6)
-            .align_x(alignment::Horizontal::Center),
+            .spacing(0),
         )
-        .center_x(Length::Fill)
-        .center_y(Length::Fill)
-        .height(240)
+        .padding([36, 40])
+        .style(|_| container::Style {
+            background: Some(pal::BG_RAISED.into()),
+            border: iced::border::Border { color: pal::LINE, width: 1.0, radius: 12.0.into() },
+            ..Default::default()
+        })
+        .width(Length::Fill)
         .into()
     } else {
         // Table header
         let tbl_header = container(
             row![
-                text("File").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(5)),
-                text("Mod ID").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(3)),
-                text("Loader").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
-                text("Version").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
-                text("Side").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
-                text("Source").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
-                text("Match").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
+                text("FILE").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(5)),
+                text("MOD ID").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(3)),
+                text("LOADER").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
+                text("VERSION").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
+                text("SIDE").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
+                text("SOURCE").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
+                text("MATCH").size(10).style(tc(pal::FAINT)).width(Length::FillPortion(2)),
             ]
             .spacing(10),
         )
-        .padding([7, 14])
+        .padding([8, 14])
         .style(|_| container::Style {
-            background: Some(pal::BG_WARM.into()),
+            background: Some(pal::SURFACE.into()),
             border: iced::border::Border {
                 color: pal::LINE,
                 width: 1.0,
@@ -1046,7 +1079,7 @@ fn view_scan(app: &App) -> Element<'_, Msg> {
 
         let mut rows: Vec<Element<'_, Msg>> = Vec::new();
         for (i, r) in filtered.iter().enumerate() {
-            let bg = if i % 2 == 0 { pal::BG } else { pal::SURFACE };
+            let bg = if i % 2 == 0 { pal::BG } else { pal::BG_RAISED };
             let mod_id  = r.jar_info.as_ref().map(|j| j.mod_id.as_str()).unwrap_or("—");
             let loader  = r.jar_info.as_ref().map(|j| j.loader).unwrap_or(ModLoader::Unknown);
             let version = r.jar_info.as_ref().and_then(|j| j.version.as_deref()).unwrap_or("—");
@@ -1205,26 +1238,26 @@ fn view_operate(app: &App) -> Element<'_, Msg> {
     // Preview strip
     let preview = container(
         row![
-            text(affected.to_string()).size(26).style(tc(pal::ACCENT)),
-            Space::with_width(10),
+            text(affected.to_string()).size(28).style(tc(pal::ACCENT)),
+            Space::with_width(12),
             column![
                 text("files will be affected").size(12).style(tc(pal::INK)),
-                text(format!("filtered to {} side", app.op_side))
+                text(format!("side: {}", app.op_side))
                     .size(11).style(tc(pal::MUTED)),
-            ].spacing(2),
+            ].spacing(3),
         ]
         .align_y(alignment::Vertical::Center),
     )
     .style(|_| container::Style {
-        background: Some(pal::ACCENT_TINT.into()),
+        background: Some(pal::BG_RAISED.into()),
         border: iced::border::Border {
-            color: Color { a: 0.3, ..pal::ACCENT },
+            color: pal::LINE,
             width: 1.0,
             radius: 10.0.into(),
         },
         ..Default::default()
     })
-    .padding([14, 20])
+    .padding([16, 20])
     .width(Length::Fill);
 
     let run_btn: Element<'_, Msg> = if app.op == Operation::Delete {
@@ -1317,7 +1350,7 @@ fn view(app: &App) -> Element<'_, Msg> {
 
 fn main() -> iced::Result {
     iced::application("Lodestone", update, view)
-        .theme(|_| Theme::Light)
+        .theme(|_| Theme::Dark)
         .window(iced::window::Settings {
             size:     Size::new(1280.0, 800.0),
             min_size: Some(Size::new(980.0, 640.0)),
