@@ -19,7 +19,8 @@ use iced::widget::{
     button, column, container, horizontal_rule, pick_list, row, scrollable, text,
     text_input, Space,
 };
-use iced::{Color, Element, Length, Settings, Size, Task};
+use iced::{Color, Element, Length, Settings, Size, Subscription, Task};
+use std::time::Duration;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Palette — mirrors marsphobos.com CSS custom properties
@@ -497,6 +498,8 @@ struct App {
     active_panel:    Panel,
     filter_side:     Option<Side>,
     log:             Vec<(String, LogLevel)>,
+    scanning:        bool,
+    anim_tick:       u8,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -514,6 +517,7 @@ impl Default for App {
             op_output: String::new(), op_confirm: String::new(),
             active_panel: Panel::Scan, filter_side: None,
             log: vec![("Lodestone ready.".into(), LogLevel::Info)],
+            scanning: false, anim_tick: 0,
         }
     }
 }
@@ -541,6 +545,8 @@ enum Msg {
     BrowseDir,
     DirPicked(Option<PathBuf>),
     ScanDir,
+    ScanComplete(Vec<ScanResult>, ScanSummary),
+    AnimTick,
     FilterSide(Option<Side>),
     OpSideSelected(Side),
     OpSelected(Operation),
@@ -602,14 +608,34 @@ fn update(app: &mut App, msg: Msg) -> Task<Msg> {
                 app.push_log("Choose a mods directory first.", LogLevel::Warn);
                 return Task::none();
             }
-            let (results, summary) = scan_directory(&dir, module);
+            let module = module.clone();
+            app.scanning = true;
+            app.anim_tick = 0;
+            app.scan_results.clear();
+            app.push_log("Scanning…", LogLevel::Info);
+            return Task::perform(
+                async move {
+                    tokio::task::spawn_blocking(move || scan_directory(&dir, &module))
+                        .await
+                        .unwrap_or_else(|_| (Vec::new(), ScanSummary::default()))
+                },
+                |(results, summary)| Msg::ScanComplete(results, summary),
+            );
+        }
+
+        Msg::ScanComplete(results, summary) => {
             let msg = format!(
                 "{} jars — {} full, {} partial, {} unidentified.",
                 summary.total, summary.full, summary.partial, summary.unidentified
             );
             app.scan_results = results;
             app.summary = summary;
+            app.scanning = false;
             app.push_log(msg, LogLevel::Ok);
+        }
+
+        Msg::AnimTick => {
+            app.anim_tick = app.anim_tick.wrapping_add(1);
         }
 
         Msg::FilterSide(s) => app.filter_side = s,
@@ -1007,7 +1033,30 @@ fn view_scan(app: &App) -> Element<'_, Msg> {
         .filter(|r| app.filter_side.map(|s| r.effective_side() == s).unwrap_or(true))
         .collect();
 
-    let results_body: Element<'_, Msg> = if app.scan_results.is_empty() {
+    let results_body: Element<'_, Msg> = if app.scanning {
+        const FRAMES: [&str; 8] = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧"];
+        let spinner = FRAMES[(app.anim_tick as usize) % FRAMES.len()];
+        container(
+            column![
+                text(spinner).size(22).style(tc(pal::ACCENT)),
+                Space::with_height(12),
+                text("Scanning…").size(14).style(tc(pal::INK)),
+                text("Reading jar manifests and bytecode.")
+                    .size(11).style(tc(pal::FAINT)),
+            ]
+            .spacing(4)
+            .align_x(alignment::Horizontal::Center),
+        )
+        .center_x(Length::Fill)
+        .padding([60, 40])
+        .style(|_| container::Style {
+            background: Some(pal::BG_RAISED.into()),
+            border: iced::border::Border { color: pal::LINE, width: 1.0, radius: 12.0.into() },
+            ..Default::default()
+        })
+        .width(Length::Fill)
+        .into()
+    } else if app.scan_results.is_empty() {
         let step = |n: &'static str, title: &'static str, desc: &'static str| -> Element<'_, Msg> {
             row![
                 container(
@@ -1348,8 +1397,19 @@ fn view(app: &App) -> Element<'_, Msg> {
 // Entry point
 // ─────────────────────────────────────────────────────────────────────────────
 
+fn subscription(app: &App) -> Subscription<Msg> {
+    if app.scanning {
+        iced::time::every(Duration::from_millis(120)).map(|_| Msg::AnimTick)
+    } else {
+        Subscription::none()
+    }
+}
+
+// rfd with tokio feature requires tokio runtime — Iced's tokio feature provides it.
+
 fn main() -> iced::Result {
     iced::application("Lodestone", update, view)
+        .subscription(subscription)
         .theme(|_| Theme::Dark)
         .window(iced::window::Settings {
             size:     Size::new(1280.0, 800.0),
